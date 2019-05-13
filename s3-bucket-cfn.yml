@@ -1,0 +1,26 @@
+---
+Resources:
+    tempS3Buket:
+        Type: AWS::S3::Bucket
+        Properties:
+            BucketName: temps3bucket554093
+            AccessControl: PublicReadWrite
+            CorsConfiguration:
+                CorsRules:
+                    - AllowedHeaders: ['*']
+                      AllowedMethods: [GET]
+                      AllowedOrigins: ['*']
+            LifecycleConfiguration:
+                Rules:
+                - Id: GlacierRule
+                  Prefix: glacier
+                  Status: Enabled
+                  ExpirationInDays: '365'
+                  Transitions:
+                      - TransitionInDays: '1'
+                        StorageClass: Glacier
+            Tags:
+              - Key: Name
+                Value: tempS3Buket
+              - Key: Environment
+                Value: Dev
