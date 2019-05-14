@@ -1,0 +1,62 @@
+---
+  Parameters:
+    AvailabilityZone:
+      Description: Provide availability zone in which to launch the instance
+      Type: String
+      ConstraintDescription: Must be a valid availability zone
+    S3BucketName:
+      Description: Provide the name of S3 S3Bucket
+      Type: String
+    EC2InstanceName:
+      Description: Provide EC2 instance name
+      Type: String
+      MinLength: '9'
+      MaxLength: '20'
+    EC2InstanceType:
+      Description: Provide valid EC2 instance Type
+      Type: String
+      AllowedValues:
+        - t1.micro
+        - t2.micro
+        - t2.small
+      Default: t2.micro
+      ConstraintDescription: must be a valid EC2 instance type.
+    VPCId:
+      Description: Provide VPC ID to launch EC2 instance
+      Type: AWS::EC2::VPC::Id
+    SubnetId:
+      Description: Provide subnet id to launch instance
+      Type: String
+    KeyName:
+      Description: Name of an existing EC2 KeyPair to enable SSH access to the instances. Linked to AWS Parameter
+      Type: AWS::EC2::KeyPair::KeyName
+      ConstraintDescription: "must be the name of an existing EC2 KeyPair."
+
+  Resources:
+    EC2Instance:
+      Type: AWS::EC2::Instance
+      Properties:
+        InstanceType:
+          Ref: EC2InstanceType
+        KeyName:
+          Ref: KeyName
+        ImageId: 'ami-a4c7edb2'
+        AvailabilityZone:
+          Ref: AvailabilityZone
+        SubnetId:
+          Ref: SubnetId
+    S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName:
+          Ref: S3BucketName
+
+  Outputs:
+    S3BucketInfo:
+      Description: S3 bucket ARN
+      Value: !GetAtt S3Bucket.Arn
+    InstanceID:
+      Description: The Instance ID
+      Value: !Ref EC2Instance
+      Export:
+        Name: !Sub "${AWS::StackName}--InstanceID"
